@@ -6,7 +6,7 @@ import os
 second_in_sample = 88
 fs = 125
 
-HOMEDIR = os.path.abspath(os.getcwd())
+HOMEDIR = "/Users/venkatesh/Desktop/BHS/subramani_project/"
 
 wideband_and_other_bands = np.load(
     f"{HOMEDIR}/Generated_data/Cortical_surface_related/wideband_and_other_bands.npz"

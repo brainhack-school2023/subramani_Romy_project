@@ -9,7 +9,7 @@ from collections import defaultdict
 from tqdm import tqdm
 import time
 
-HOMEDIR = os.path.abspath(os.getcwd())
+HOMEDIR = "/Users/venkatesh/Desktop/BHS/subramani_project/"
 
 
 def graph():
@@ -19,7 +19,7 @@ def graph():
         Matrix of floats: A weight matrix for the thresholded graph
     """
 
-    connectivity = sio.loadmat("/homes/v20subra/S4B2/GSP/SC_avg56.mat")["SC_avg56"]
+    connectivity = sio.loadmat(f"{HOMEDIR}/src_data/SC_avg56.mat")["SC_avg56"]
     degree = np.diag(np.power(np.sum(connectivity, axis=1), -0.5))
     laplacian = np.eye(connectivity.shape[0]) - np.matmul(
         degree, np.matmul(connectivity, degree)
@@ -31,11 +31,10 @@ def graph():
 laplacian = graph()
 [eigvals, eigevecs] = la.eigh(laplacian)
 
-total_no_of_events = "30_events"
 video_duration = 88
 subjects = 25
 regions = 360
-number_of_events = 30
+number_of_events = 25
 baseline_in_samples = 25
 post_onset_in_samples = 63
 n_surrogate = 50
@@ -248,7 +247,7 @@ def band_wise_SDI(band, label):
 SDI_empi = defaultdict(dict)
 SDI_surrogate = defaultdict(dict)
 
-conditions = ["baseline", "post_onset"]
+conditions = ["baseline"]
 
 for condition in conditions:
 
