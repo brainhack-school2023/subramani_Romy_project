@@ -1,4 +1,4 @@
-
+## Study 1
 `Generated_data` handles all the intermediately generated files which are necessary for the subsequent analysis. `Results` : to store all the figures; `src_data` : all the necessary source data files; `src_scripts` : scripts for the whole pipeline
 
 `src_scripts` contains the scripts in a sequential order required for the analysis.
@@ -16,9 +16,7 @@ A quick description :
 
 `5_SDI_spatial_maps.py` : Visualization of the spatial maps
 
-`6a_SDI_in_7YeoNetworks.py` : SDI analysis in network-level in the 7-network variant of Yeo networks
+`6_SDI_statistics_strong_weak_comparison.py` : Statistical comparisons between SDIs computed for Weak and Strong ISC periods
 
-`6b_SDI_in_17YeoNetworks.py` : SDI analysis in a finer network level, i.e., 17-network variant of Yeo networks
-
-`7_SDI_Decoding.py` : Meta-analysis of the spatial maps, and visualization in Wordclouds
-
+## Study 2
+`7_Segregation.py` : Interactions between a given Yeo-Krienen network vs the rest of the network using a Graph Theory measure. Subsequent analysis on the interaction during certain segments of the video
