@@ -1,5 +1,4 @@
-#%%
-
+"""Study 1. This script is used to compute the SDI statistics. The SDI statistics are computed using the following steps:  Ranksum test, 1st level model testing, 2nd level model testing. The 2nd level model testing is done using permutation test. The results are plotted on the surface."""
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import rankdata, ttest_1samp
@@ -12,20 +11,21 @@ import scipy
 import os
 
 total_no_of_events = "30_events"
-HOMEDIR = os.path.abspath(os.getcwd())
+HOMEDIR = "/users/local/Venkatesh/Brainhack"
 
 
 n_subjects = 25
-n_events = 30
+n_events = 24
 n_roi = 360
 n_surrogate = 50
 
 
 def stats(band, empirical_SDI, surrogate_SDI):
+    """two-level permutation test for SDI"""
     empirical_one_band = empirical_SDI[f"{band}"]
     surrogate_one_band = surrogate_SDI[f"{band}"]
 
-    test_stats = list()
+    test_stats_step_1 = list() #test_stats_step_1 to store the ranksum test statistics
 
     for subject in tqdm(range(n_subjects)):
         event_level_p = list()
@@ -41,17 +41,16 @@ def stats(band, empirical_SDI, surrogate_SDI):
                 stat_test = sum(
                     rankdata(np.abs(data_empirical - data_surrogate))
                     * np.sign(data_empirical - data_surrogate)
-                )
-                stat_test_normalized = stat_test / n_surrogate
+                ) # ranksum test
+                stat_test_normalized = stat_test / n_surrogate # normalized ranksum test
 
                 roi_level_p.append(stat_test_normalized)
 
             event_level_p.append(roi_level_p)
 
-        test_stats.append(event_level_p)
+        test_stats_step_1.append(event_level_p)
 
-    # Step 2 : Test for effect of events
-
+    # Step 2 : First level Model testing for consistency of SDI across events
     pvalues_step2 = list()
     tvalues_step2 = list()
 
@@ -60,9 +59,10 @@ def stats(band, empirical_SDI, surrogate_SDI):
         sub_wise_t = list()
 
         for roi in range(n_roi):
-            data = np.array(test_stats)[sub, :, roi]
-
+            data = np.array(test_stats_step_1)[sub, :, roi]
             t, p = ttest_1samp(data, popmean=0)
+
+            # Correcting for inf and -inf values in t and p
             if t == np.inf:
                 t = 0
             if t == -np.inf:
@@ -79,7 +79,11 @@ def stats(band, empirical_SDI, surrogate_SDI):
         pvalues_step2.append(sub_wise_p)
         tvalues_step2.append(sub_wise_t)
 
-    # Step 3 : Second level Model
+
+    np.savez_compressed(f'{HOMEDIR}/Generated_data/Graph_SDI_related/1st_level_test_stats_weak/{band}_{condition}', tvalues_step2=tvalues_step2)
+
+    # Step 3 : Second level Model testing for consistency of SDI across subjects
+    # Permutation test
     secondlevel_t, _, _ = mne.stats.permutation_t_test(
         np.array(np.array(tvalues_step2)), n_jobs=-1, n_permutations=50000
     )
@@ -111,9 +115,6 @@ def stats(band, empirical_SDI, surrogate_SDI):
         unthresholded_tvals_expanded, path_Glasser, mnitemp["mask"]
     )
 
-    # thresholding t, for decoding
-    # plt.hist(secondlevel_t)
-    # plt.show()
 
     np.savez_compressed(
         f"{HOMEDIR}/Generated_data/Graph_SDI_related/2nd_level_test_stats/unthresholded/unthresholded_{condition}_{band}",
@@ -139,7 +140,7 @@ def stats(band, empirical_SDI, surrogate_SDI):
     )
 
 
-conditions = ["differenced"]
+conditions = ["baseline","differenced"] # conditions are baseline and differenced
 
 for condition in conditions:
     empirical_SDI = np.load(
@@ -154,6 +155,3 @@ for condition in conditions:
     stats("theta", empirical_SDI, surrogate_SDI)
     stats("low_beta", empirical_SDI, surrogate_SDI)
     stats("high_beta", empirical_SDI, surrogate_SDI)
-
-
-# %%

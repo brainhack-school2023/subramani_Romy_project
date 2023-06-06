@@ -1,1 +1,4 @@
 src.egg-info
+/generated_data/
+/src_data/
+/Results/

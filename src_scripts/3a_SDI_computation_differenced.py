@@ -1,4 +1,4 @@
-#%%
+"""Study 1. This script computes the SDI for each band, and saves the empirical and surrogate SDI."""
 import numpy as np
 import importlib
 import os
@@ -8,11 +8,11 @@ import scipy.linalg as la
 from collections import defaultdict
 from tqdm import tqdm
 
-HOMEDIR = "/Users/venkatesh/Desktop/BHS/subramani_project/"
+HOMEDIR = "/users/local/Venkatesh/Brainhack"
 
 
 def graph():
-    """Nearest Neighbour graph Setup.
+    """Computing Graph Laplacian for the consensus structural graph
 
     Returns:
         Matrix of floats: A weight matrix for the thresholded graph
@@ -27,11 +27,14 @@ def graph():
     return laplacian
 
 
-laplacian = graph()
-[eigvals, eigevecs] = la.eigh(laplacian)
+laplacian = graph()  # laplacian is a matrix of shape (n_ROI, n_ROI)
+[eigvals, eigevecs] = la.eigh(
+    laplacian
+)  # eigenvalues and eigenvectors of the laplacian
 
 
-def gft(signal):  # no change
+def gft(signal):
+    """Graph Fourier Transform"""
     assert np.shape(signal) == (subjects, regions, video_duration)
     array_of_gft = list()
 
@@ -46,6 +49,7 @@ def gft(signal):  # no change
 
 
 def signal_filtering(g_psd, low_freqs, high_freqs):
+    """Filtering the signal with low and high frequencies"""
     assert np.shape(g_psd) == (subjects, regions, video_duration)
 
     lf_signal = list()
@@ -67,7 +71,8 @@ def signal_filtering(g_psd, low_freqs, high_freqs):
     return lf_signal, hf_signal
 
 
-def frobenius_norm(lf_signal, hf_signal, label):  # no change
+def frobenius_norm(lf_signal, hf_signal, label):
+    """Frobenius norm of the signal"""
     assert np.shape(lf_signal) == (subjects, regions, video_duration)
     assert np.shape(hf_signal) == (subjects, regions, video_duration)
 
@@ -88,14 +93,15 @@ def frobenius_norm(lf_signal, hf_signal, label):  # no change
     return normed_lf, normed_hf
 
 
-def SDIndex(signal_in_dict):  # no change
+def SDIndex(signal_in_dict):
+    """Structural-Decoupling Index- quantifying the degree of decoupling between structure and function"""
     lf_signal, hf_signal = signal_in_dict["lf"], signal_in_dict["hf"]
     index = hf_signal / lf_signal
 
     return index
 
 
-def surrogacy(eigvector, signal):  # updated
+def surrogacy(eigvector, signal):
     """Graph-informed Surrogacy control
     Args:
         eigvector (matrix): Eigenvector
@@ -132,10 +138,10 @@ def surrogacy(eigvector, signal):  # updated
     return surrogate_signal
 
 
-def signal_to_SDI(lf_signal, hf_signal):  # no change
-    # Norm
-    normed_baseline_signal = defaultdict(dict)
-    normed_post_onset_signal = defaultdict(dict)
+def signal_to_SDI(lf_signal, hf_signal):
+    """Computing the SDI"""
+    normed_baseline_signal = defaultdict(dict)  # Frob. norm of the baseline signal
+    normed_post_onset_signal = defaultdict(dict)  # Frob. norm of the post-onset signal
 
     normed_baseline_signal["lf"], normed_baseline_signal["hf"] = frobenius_norm(
         lf_signal=lf_signal, hf_signal=hf_signal, label="baseline"
@@ -158,33 +164,34 @@ def signal_to_SDI(lf_signal, hf_signal):  # no change
 video_duration = 88
 subjects = 25
 regions = 360
-number_of_events = 25
+number_of_events = 24
 baseline_in_samples = 25
 post_onset_in_samples = 63
 n_surrogate = 50
 
-
+# Load the wideband and other bands data
 wideband_and_other_bands_zscored = np.load(
     f"{HOMEDIR}/Generated_data/Cortical_surface_related/wideband_and_other_bands_zscored.npz"
 )
 
 
 def band_wise_SDI(band):
-
+    """Computing the SDI for each band"""
     empirical_SDI_differenced_condition = list()
     surrogate_SDI_differenced_condition = list()
 
     for event in range(number_of_events):
         signal = wideband_and_other_bands_zscored[f"{band}"][:, event]
+        # Compute the GFT of the signal
         psd = gft(signal)
 
-        # Critical Freq identification for symmetric power dichotomy
         psd_abs_squared = np.power(np.abs(psd), 2)
         assert np.shape(psd_abs_squared) == (subjects, regions, video_duration)
 
         psd_abs_squared_averaged = np.mean(psd_abs_squared, axis=(0, 2))
         assert np.shape(psd_abs_squared_averaged) == (regions,)
 
+        # Compute the median power for identifying the critical frequency (cut-off frequency)
         median_power = np.trapz(psd_abs_squared_averaged) / 2
         sum_of_freqs = 0
         i = 0
@@ -192,25 +199,25 @@ def band_wise_SDI(band):
             sum_of_freqs = np.trapz(psd_abs_squared_averaged[:i])
             i += 1
         critical_freq = i - 1
-        ### End of critical freq
 
-        # Filters
+        # With the critical frequency, compute the low and high frequencies
         low_freqs = np.zeros((regions, regions))
         low_freqs[:, :critical_freq] = eigevecs[:, :critical_freq]
 
         high_freqs = np.zeros((regions, regions))
         high_freqs[:, critical_freq:] = eigevecs[:, critical_freq:]
 
-        ########################################
-        # Signal-filtering empirical data
-
+        # Fetch the low and high frequency components of the signal
         lf_signal, hf_signal = signal_filtering(psd, low_freqs, high_freqs)
+
+        # Compute the SDI from the low and high frequency components
         empirical_SDIndex_bc = signal_to_SDI(lf_signal, hf_signal)
 
         empirical_SDI_differenced_condition.append(empirical_SDIndex_bc)
 
-        ########################################
-        # #############Surrogate data#############
+        #########################################################################
+        ############ Surrogate computation#######################################
+        #########################################################################
         surrogate_signal = surrogacy(eigevecs, signal)
         surrogate_psd = [gft(surrogate_signal[n]) for n in range(n_surrogate)]
 
@@ -248,13 +255,13 @@ def band_wise_SDI(band):
     return empirical_SDI_differenced_condition, surrogate_SDI_differenced_condition
 
 
-SDI_empirical = defaultdict(dict)
-SDI_surrogate = defaultdict(dict)
+SDI_empirical = defaultdict(dict)  # Empirical SDI
+SDI_surrogate = defaultdict(dict)  # Surrogate SDI
 
 for labels, signal in tqdm(wideband_and_other_bands_zscored.items()):
     SDI_empirical[f"{labels}"], SDI_surrogate[f"{labels}"] = band_wise_SDI(f"{labels}")
 
-
+# Save the empirical and surrogate SDI
 np.savez_compressed(
     f"{HOMEDIR}/Generated_data/Graph_SDI_related/empirical_SDI_differenced",
     **SDI_empirical,
@@ -263,5 +270,3 @@ np.savez_compressed(
     f"{HOMEDIR}/Generated_data/Graph_SDI_related/surrogate_SDI_differenced.npz",
     **SDI_surrogate,
 )
-
-# %%

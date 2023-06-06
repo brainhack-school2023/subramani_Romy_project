@@ -1,4 +1,4 @@
-#%%
+"""Study 1. This script is used to plot the spatial maps of SDI for each band and condition"""
 import numpy as np
 from nilearn import plotting
 import matplotlib.pyplot as plt
@@ -8,9 +8,8 @@ from nilearn._utils import check_niimg_3d
 from matplotlib import gridspec
 from nilearn.surface import vol_to_surf
 
-HOMEDIR = (
-    "/users2/local/Venkatesh/Multimodal_ISC_Graph_study"  # os.path.abspath(os.getcwd())
-)
+HOMEDIR = "/users/local/Venkatesh/Brainhack"
+
 
 bands = [
     "alpha",
@@ -63,11 +62,11 @@ def customized_plotting_img_on_surf(views, hemispheres, vmax, threshold, file_lo
             hemi=hemi,
             bg_map=bg_map,
             axes=ax,
-            colorbar=False,
+            colorbar=True,
             vmax=vmax,
             threshold=threshold,
         )
-    fig.savefig(f"{file_location}.png", transparent=True, dpi=500)
+    # fig.savefig(f"{file_location}.png", transparent=True, dpi=500)
 
 
 for condition in conditions:
@@ -82,7 +81,7 @@ for condition in conditions:
                 )
             )
         )
-
+    print(np.max(max))
     for band in bands:
         path_to_file = f"{HOMEDIR}/Results/SDI/thresholded_SDI_spatial_map/{condition}/s_map_thresholded_{band}.nii.gz"
         # colorbar in `plot_img_on_surf` defaults out to symmetrical, use it with caution
