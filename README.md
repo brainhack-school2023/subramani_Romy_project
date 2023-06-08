@@ -23,14 +23,14 @@ summary: "This study investigated the Structure-Function coupling of weakly corr
 
 # If you want to add a cover image (listpage and image in the right), add it to your directory and indicate the name
 # below with the extension.
-image: "/Users/venkatesh/Desktop/BHS-delivery/school-brainhack.github.io/content/en/project/video-EEG-FC-SC/paradigms_BHS.jpg"
+image: "paradigms_BHS.jpg"
 ---
 <!-- This is an html comment and this won't appear in the rendered page. You are now editing the "content" area, the core of your description. Everything that you can do in markdown is allowed below. We added a couple of comments to guide your through documenting your progress. -->
 
 ## Project definition
 
 ## Background
-## Study 1
+### Study 1
 Numerous studies have extensively investigated how individuals respond to naturalistic stimuli, particularly video-watching. These studies, conducted by researchers such as Uri Hasson et al. (2004), Sonkusare et al. (2019), have provided valuable insights into the neural mechanisms underlying the processing of such stimuli. Additionally, investigations into the synchronization of brain activity among individuals during independent viewing, as explored by Uri Hasson et al. (2004) and Dmochowski et al. (2012), have revealed the remarkable coordination and shared neural responses that occur during these experiences. Furthermore, previous research has focused on quantifying the strength of the relationship between the brain's structure and its functional activity during resting-state conditions. Study by Preti M G and Van de Ville D. (2019) has shed light on this structure-function coupling, highlighting how the underlying anatomical organization influences brain function at rest. A recent study conducted by Samara et al. (2023) has compared the macro-scale cortical organization of the brain during video-watching with resting-state conditions, providing valuable insights into the similarities and differences in brain organization and functional connectivity between these two states. Collectively, these studies have significantly advanced our understanding of how the brain responds to naturalistic stimuli, the synchronization of brain activity during independent viewing, the relationship between brain structure and function during rest, and the cortical organization during video-watching and resting-state conditions.
 
 The gap in the existing research is the exploration of how the electrophysiological activity during video-watching depends on the underlying anatomical structure.
@@ -44,7 +44,7 @@ The objective of our study is two folds: To examine the Structure-Function coupl
 To compare the Structure-Function coupling observed during Strong ISC and Weak ISC periods, shedding light on the differences in cortical organization and functional connectivity between these states.
 
 
-## Study 2
+### Study 2
 Results supported by from the Study 1 points in the direction that Structure-Function coupling during Strong and Weak ISC does not vary, prompting to design and analyse the Inter-Subject Synchrony during video-watching from a different lens.
 
 Graph Theory has emerged as a powerful tool for modeling the brain as interconnected networks, enabling the examination of functional relevance and brain organization through various measures (Sporns, 2022). The networked brain exhibits both segregation, characterized by specialized processing within specific networks, and integration, involving distributed information processing across multiple networks (Bassett and Bullmore, 2007). This highlights the dynamic interplay between specialized and distributed processing in the brain. Segregation, a measure derived from Graph Theory and emphasized by Wig (2017), quantifies the interaction level between a given network and other networks, providing insights into communication and information exchange (Wig, 2017). By leveraging Graph Theory measures such as segregation, valuable insights into the functional connectivity and information processing dynamics of the brain can be gained.
@@ -127,7 +127,7 @@ This project was realized as part of the Brainhack School 2023. The authors woul
 
 # Logistics
 ## Study 1
-`Generated_data` handles all the intermediately generated files which are necessary for the subsequent analysis. `Results` : to store all the figures; `src_data` : all the necessary source data files; `src_scripts` : scripts for the whole pipeline
+`Generated_data` (available on the OSF) handles all the intermediately generated files which are necessary for the subsequent analysis. `Results` : to store all the figures; `src_data` (on the OSF) : all the necessary source data files; `src_scripts` : scripts for the whole pipeline
 
 `src_scripts` contains the scripts in a sequential order required for the analysis.
 
@@ -149,3 +149,4 @@ A quick description :
 ## Study 2
 `7_Segregation.py` : Interactions between a given Yeo-Krienen network vs the rest of the network using a Graph Theory measure. Subsequent analysis on the interaction during certain segments of the video
 
+Data are provided to be able to reproduce the results. Head on to the OSF link provided, download the source and generated data, and run these scripts. 
