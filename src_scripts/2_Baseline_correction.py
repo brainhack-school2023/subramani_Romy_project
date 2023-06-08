@@ -1,7 +1,6 @@
 """Study 1. This script is used to perform baseline correction on the wideband and other bands data"""
 import numpy as np
 import mne
-import os
 
 second_in_sample = 88
 fs = 125

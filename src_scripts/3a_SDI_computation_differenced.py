@@ -1,7 +1,6 @@
 """Study 1. This script computes the SDI for each band, and saves the empirical and surrogate SDI."""
 import numpy as np
 import importlib
-import os
 import matplotlib.pyplot as plt
 from scipy import io as sio
 import scipy.linalg as la

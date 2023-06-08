@@ -1,13 +1,10 @@
 """Study 1. This script computes the SDI for the baseline period and saves the empirical and surrogate SDI."""
 import numpy as np
 import importlib
-import os
-import matplotlib.pyplot as plt
 from scipy import io as sio
 import scipy.linalg as la
 from collections import defaultdict
 from tqdm import tqdm
-import time
 
 HOMEDIR = "/users/local/Venkatesh/Brainhack"
 

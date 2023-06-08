@@ -1,3 +1,4 @@
+#%%
 """
 Study 2
 This code will compute the dynamical connectivity from a time series dataset of EEG signals for each of the 25 subjects, for each frequency band that is present in the npz data files. 
@@ -147,12 +148,14 @@ def parellelize(runs):
         envelope_signal_alpha[:, np.random.permutation(n_ROI), :], network=1
     )
 
+# Takes a long time to run.
+# surrogate_data = Parallel(n_jobs=NB_CPU - 1, max_nbytes=None)(
+#     delayed(parellelize)(main_parallelization)
+#     for main_parallelization in tqdm(range(100))
+# )
 
-surrogate_data = Parallel(n_jobs=NB_CPU - 1, max_nbytes=None)(
-    delayed(parellelize)(main_parallelization)
-    for main_parallelization in tqdm(range(100))
-)
-# surrogate_data = np.load('/users/local/Venkatesh/Brainhack/Generated_data/Connectivity_related/surrogate_alpha_visual.npz')['surrogate_data']
+# instead of running the above code, you can load the surrogate data from the npz file, which is available in OSF. 
+surrogate_data = np.load('/users/local/Venkatesh/Brainhack/Generated_data/Connectivity_related/surrogate_alpha_visual.npz')['surrogate_data']
 
 empirical_segregation = segregation_computation(envelope_signal_alpha, 1)
 
@@ -165,6 +168,17 @@ strong_ISC_timestamps = np.load(f"{HOMEDIR}/src_data/strong_ISC_timestamps.npz")
     "timestamps"
 ]
 
+isc_result = np.load(f"{HOMEDIR}/src_data/sourceCCA_ISC_8s_window.npz")["sourceISC"]
+noise_floor_source = np.load(f"{HOMEDIR}/src_data/noise_floor_8s_window.npz")[
+    "isc_noise_floored"
+]  # Noise floor
+sig_list = list()
+for i in range(3):
+    significance = np.where(
+        np.max(np.array(noise_floor_source)[:, i, :], axis=0) < isc_result[i]
+    )[0]
+    sig_list.append(significance)
+
 plt.style.use("fivethirtyeight")
 plt.rcParams["figure.figsize"] = [7.50, 3.50]
 plt.rcParams["figure.autolayout"] = True
@@ -174,13 +188,13 @@ ax1 = fig.add_subplot(211)
 
 sig_pos = np.where(empirical_segregation > np.max(surrogate_data, axis=0))[0]
 sig_neg = np.where(empirical_segregation < np.min(surrogate_data, axis=0))[0]
-sig = list()
-sig.append(sig_pos)
-sig.append(sig_neg)
-sig = np.array(sorted(np.hstack(sig)))
+sig_segregation = list()
+sig_segregation.append(sig_pos)
+sig_segregation.append(sig_neg)
+sig_segregation= np.array(sorted(np.hstack(sig_segregation)))
 
 mask = np.zeros(170)
-significance = np.unique(np.hstack(a))
+significance = np.unique(np.hstack(sig_list))
 mask[significance] = 1
 
 ax1.plot(mask, label="Strong ISC", color="blue")
@@ -189,7 +203,7 @@ ax1.plot(significance, mask[significance], marker="o", ls="", color="red")
 
 ax2 = ax1.twinx()
 ax2.plot(np.array(empirical_segregation).T, color="green", label="Segregation")
-ax2.plot(sig, np.array(empirical_segregation)[sig], marker="o", ls="", color="red")
+ax2.plot(sig_segregation, np.array(empirical_segregation)[sig_segregation], marker="o", ls="", color="red")
 ax2.axhline(0, c="orange")
 ax1.legend()
 
@@ -205,17 +219,6 @@ fig.savefig(f"{HOMEDIR}/Results/Figures/segregation_alpha.svg")
 
 
 # Test 2: Any link between Significant ISC and non-significant ISC in terms of segregation ?
-isc_result = np.load(f"{HOMEDIR}/src_data/sourceCCA_ISC_8s_window.npz")["sourceISC"]
-noise_floor_source = np.load(f"{HOMEDIR}/src_data/noise_floor_8s_window.npz")[
-    "isc_noise_floored"
-]  # Noise floor
-sig_list = list()
-for i in range(3):
-    significance = np.where(
-        np.max(np.array(noise_floor_source)[:, i, :], axis=0) < isc_result[i]
-    )[0]
-    sig_list.append(significance)
-
 
 sig_list = np.unique(np.hstack(sig_list))
 non_sig_list = list(set(range(170)) - set(sig_list))
