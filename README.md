@@ -47,9 +47,8 @@ To compare the Structure-Function coupling observed during Strong ISC and Weak I
 ## Study 2
 Results supported by from the Study 1 points in the direction that Structure-Function coupling during Strong and Weak ISC does not vary, prompting to design and analyse the Inter-Subject Synchrony during video-watching from a different lens.
 
-- Graph Theory is a powerful tool to model the brain as graphs and the functional relevance such as brain organization can be tested with various measures [Olaf Sporns., 2022]
-- Networked brain supports Segregation/Specialized and Integration/Distributed information processing [Bassett D, Bullmore E., 2007]
-- Segregation, a Graph Theory measure, quantifies the level of interaction between a given network and the rest of the networks [Wig G S., 2017]
+Graph Theory has emerged as a powerful tool for modeling the brain as interconnected networks, enabling the examination of functional relevance and brain organization through various measures (Sporns, 2022). The networked brain exhibits both segregation, characterized by specialized processing within specific networks, and integration, involving distributed information processing across multiple networks (Bassett and Bullmore, 2007). This highlights the dynamic interplay between specialized and distributed processing in the brain. Segregation, a measure derived from Graph Theory and emphasized by Wig (2017), quantifies the interaction level between a given network and other networks, providing insights into communication and information exchange (Wig, 2017). By leveraging Graph Theory measures such as segregation, valuable insights into the functional connectivity and information processing dynamics of the brain can be gained.
+
 ![image info](/Segregation.jpg)
 *Segregation quantifies how much does a given network talk to other networks, e.g., Does Visual Yeo-Krienen network talk to other networks such as Default-Mode Network, Frontoparietal, Dorsal Attention ?*
 
